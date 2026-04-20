@@ -7,3 +7,10 @@
 * Nora Lüthi
 * Elias Schafer
 * Jasmin Studer
+
+## Data
+
+Data source: SBB Infrastruktur – "Züge pro Streckenabschnitt und Monat"
+Available at: https://data.sbb.ch/explore/dataset/zugzahlen_pro_monat/information/
+License: Open use, source must be provided
+Data status: April 2026
