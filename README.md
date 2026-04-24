@@ -4,7 +4,7 @@
 
 ## Group Members
 
-* Linus Bucher
+* Lino Bucher
 * Nora Lüthi
 * Elias Schafer
 * Jasmin Studer
