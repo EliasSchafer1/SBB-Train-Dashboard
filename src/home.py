@@ -27,6 +27,12 @@ total_trains_per_month = trains_df.groupby("bezugsmonat").agg(
 
 st.bar_chart(data=total_trains_per_month, x = "bezugsmonat", y = {"dtv_p_bezugsmonat", "dtv_g_bezugsmonat"}, stack = True)
 
+#Histogramm distribution of average number trains per line
+avg_number_trains_per_line = trains_df.groupby("strecke_bezeichnung")["dtv_bezugsmonat"].mean().reset_index()
+st.write(avg_number_trains_per_line)
+st.bar_chart(data=avg_number_trains_per_line, x = "strecke_bezeichnung", y = "dtv_bezugsmonat")
+
+
 #Müll
 #st.map(data=total_trains_per_month, latitude=None, longitude=None)
 #fig, ax = plt.subplots()
