@@ -3,9 +3,15 @@ import pandas as pd
 from data_cleaning import load_data, clean_data
 import matplotlib.pyplot as plt
 
-# Pre processing
+# Pre-processing
+# Store cleaned dataframe in session_state so user changes such as 
+# added rows or imputed values are kept during the current session.
 trains_raw_df = load_data()
-trains_df = clean_data(trains_raw_df)
+
+if "trains_df" not in st.session_state:
+    st.session_state.trains_df = clean_data(trains_raw_df)
+
+trains_df = st.session_state.trains_df
 
 st.title("SBB Trains per Route")
 st.write("Here you can explore a real-life dataset from SBB.")
@@ -16,6 +22,28 @@ st.dataframe(trains_df)
 st.subheader("Dataset information")
 st.write("Rows:", trains_df.shape[0])
 st.write("Columns:", trains_df.shape[1])
+
+st.subheader("Missing values per column")   #show data that the user might want to impute
+st.write(trains_df.isna().sum())
+
+st.subheader("Handle Missing Values")
+
+# fill missing previous-year train counts with column mean
+if st.button("Fill missing previous-year values (mean)"):
+    cols = [
+        "dtv_vorjahresmonat",
+        "dtv_p_vorjahresmonat",
+        "dtv_g_vorjahresmonat",
+    ]
+
+    for col in cols:
+        st.session_state.trains_df[col] = st.session_state.trains_df[col].fillna(
+            st.session_state.trains_df[col].mean()
+        )
+
+    st.success("Missing values filled")
+    st.rerun()
+
 st.write(trains_df.dtypes)
 
 
