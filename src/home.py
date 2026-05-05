@@ -1,3 +1,4 @@
+from datetime import date
 import streamlit as st
 import pandas as pd
 from data_cleaning import load_data, clean_data
@@ -94,27 +95,32 @@ st.bar_chart(data=top_10_lines, x = "Top_10_Strecken", y= ["personenzuege_2025",
 #-------------------------------------------------
 
 @st.dialog("New Train Line Added")
-def add_data(strecke_bezeichnung):
-    st.write("You added the new train line ", strecke_bezeichnung, " into the dataframe.")
+def success_dialog():
+    st.write("Success! The new row was added to the dataframe.")
+    trains_df.loc[len(trains_df)-1]
     if st.button('OK'):
         st.rerun()
 
 st.subheader("Input Additional Data")
 with st.form("new_train_line"):
-    st.write("Here you can add data from a new train line into the dataframe.")
+    st.write("Here you can add data into the dataframe.")
 
-    strecke_bezeichnung = st.text_input('Strecke Bezeichnung', key = "strecke")
-    abschnitt = st.text_input('Abschnitt', key = "abschnitt")
+    strecke_bezeichnung = st.text_input('Strecke Bezeichnung')
+    abschnitt = st.text_input('Abschnitt')
+    monat = st.selectbox("Monat", {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"})
+    jahr = st.number_input("Jahr", min_value = 1980, max_value = int(date.today().strftime("%Y")))
+    dtv_p = st.number_input('Anzahl Personenverkehrszüge')
+    dtv_g = st.number_input('Anzahl Güterverkehrszüge')
 
     submitted = st.form_submit_button('Submit')
 
 if(submitted):
-    add_data(strecke_bezeichnung)
-
-
-#Müll
-#st.map(data=total_trains_per_month, latitude=None, longitude=None)
-#fig, ax = plt.subplots()
-#ax.bar("bezugsmonat", "dtv_bezugsmonat")
-
-
+    bezugsmonat = pd.to_datetime("{}-{}-01".format(jahr, monat)).to_period("M")
+    new_row = {"strecke_bezeichnung": strecke_bezeichnung,
+               "abschnitt": abschnitt,
+               "bezugsmonat": bezugsmonat,
+               "dtv_bezugsmonat": dtv_p + dtv_g,
+               "dtv_p_bezugsmonat": dtv_p,
+               "dtv_g_bezugsmonat": dtv_g}
+    trains_df = pd.concat([trains_df, pd.DataFrame([new_row])], ignore_index = True)
+    success_dialog()
