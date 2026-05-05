@@ -47,7 +47,7 @@ Data status: April 2026
 
 ## Group Members
 
-* Lino Bucher
+* Linus Bucher
 * Nora Lüthi
 * Elias Schafer
 * Jasmin Studer
