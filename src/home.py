@@ -110,17 +110,31 @@ with st.form("new_train_line"):
     monat = st.selectbox("Monat", {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"})
     jahr = st.number_input("Jahr", min_value = 1980, max_value = int(date.today().strftime("%Y")))
     dtv_p = st.number_input('Anzahl Personenverkehrszüge')
+    dtv_p_vorjahr = st.number_input('Anzahl Personenerkehrszüge im Vorjahresmonat', value = None)
     dtv_g = st.number_input('Anzahl Güterverkehrszüge')
+    dtv_g_vorjahr = st.number_input('Anzahl Güterverkehrszüge im Vorjahresmonat', value = None)
 
     submitted = st.form_submit_button('Submit')
 
 if(submitted):
     bezugsmonat = pd.to_datetime("{}-{}-01".format(jahr, monat)).to_period("M")
+    vorjahresmonat = pd.to_datetime("{}-{}-01".format(jahr-1, monat)).to_period("M")
+
+    hat_vorjahresmonat = dtv_p_vorjahr is not None and dtv_g_vorjahr is not None
+    dtv_vorjahr = None
+    if(hat_vorjahresmonat):
+        dtv_vorjahr = dtv_p_vorjahr + dtv_g_vorjahr
+
     new_row = {"strecke_bezeichnung": strecke_bezeichnung,
                "abschnitt": abschnitt,
                "bezugsmonat": bezugsmonat,
+               "vorjahresmonat": vorjahresmonat,
                "dtv_bezugsmonat": dtv_p + dtv_g,
                "dtv_p_bezugsmonat": dtv_p,
-               "dtv_g_bezugsmonat": dtv_g}
+               "dtv_g_bezugsmonat": dtv_g,
+               "dtv_vorjahresmonat": dtv_vorjahr,
+               "dtv_p_vorjahresmonat": dtv_p_vorjahr,
+               "dtv_g_vorjahresmonat": dtv_g_vorjahr,
+               "hat_vorjahresmonat": hat_vorjahresmonat}
     trains_df = pd.concat([trains_df, pd.DataFrame([new_row])], ignore_index = True)
     success_dialog()
