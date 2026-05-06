@@ -94,6 +94,20 @@ st.bar_chart(data=top_10_lines, x = "Top_10_Strecken", y= ["personenzuege_2025",
 
 #-------------------------------------------------
 
+def validate_strecke_bezeichnung(strecke_bezeichnung):
+    if(len(strecke_bezeichnung)<2):
+        return False, "Streckenbezeichnung muss mindestens 2 Buchstaben haben."
+    if('.' in strecke_bezeichnung):
+        return False, "Streckenbezeichnung darf keine Sonderzeichen enthalten." 
+    return True, ""
+
+def validate_abschnitt(abschnitt):
+    if(len(abschnitt)<2):
+        return False, "Abschnittbezeichnung muss mindestens 2 Buchstaben haben."
+    if('.' in abschnitt):
+        return False, "Abschnittbezeichnung darf keine Sonderzeichen enthalten." 
+    return True, ""
+
 @st.dialog("New Train Line Added")
 def success_dialog():
     st.write("Success! The new row was added to the dataframe.")
@@ -102,39 +116,57 @@ def success_dialog():
         st.rerun()
 
 st.subheader("Input Additional Data")
-with st.form("new_train_line"):
-    st.write("Here you can add data into the dataframe.")
+strecke_bezeichnung = st.text_input('Strecke Bezeichnung')
+if strecke_bezeichnung: 
+    is_valid, message = validate_strecke_bezeichnung(strecke_bezeichnung=strecke_bezeichnung)
+    if not is_valid:
+        st.error(message)
 
-    strecke_bezeichnung = st.text_input('Strecke Bezeichnung')
-    abschnitt = st.text_input('Abschnitt')
-    monat = st.selectbox("Monat", {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"})
-    jahr = st.number_input("Jahr", min_value = 1980, max_value = int(date.today().strftime("%Y")))
-    dtv_p = st.number_input('Anzahl Personenverkehrszüge')
-    dtv_p_vorjahr = st.number_input('Anzahl Personenerkehrszüge im Vorjahresmonat', value = None)
-    dtv_g = st.number_input('Anzahl Güterverkehrszüge')
-    dtv_g_vorjahr = st.number_input('Anzahl Güterverkehrszüge im Vorjahresmonat', value = None)
+abschnitt = st.text_input('Abschnitt')
+monat = st.selectbox("Monat", {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"})
+jahr = st.number_input("Jahr", min_value = 1980, max_value = int(date.today().strftime("%Y")))
+dtv_p = st.number_input('Anzahl Personenverkehrszüge', min_value = 0)
+dtv_g = st.number_input('Anzahl Güterverkehrszüge', min_value = 0)
 
-    submitted = st.form_submit_button('Submit')
+hat_vorjahresmonat = st.checkbox("Vorjahresdaten vorhanden")
+dtv_p_vorjahr = st.number_input('Anzahl Personenerkehrszüge im Vorjahresmonat', min_value = 0, disabled = not hat_vorjahresmonat)
+dtv_g_vorjahr = st.number_input('Anzahl Güterverkehrszüge im Vorjahresmonat', min_value = 0, disabled = not hat_vorjahresmonat)
 
-if(submitted):
-    bezugsmonat = pd.to_datetime("{}-{}-01".format(jahr, monat)).to_period("M")
-    vorjahresmonat = pd.to_datetime("{}-{}-01".format(jahr-1, monat)).to_period("M")
 
-    hat_vorjahresmonat = dtv_p_vorjahr is not None and dtv_g_vorjahr is not None
-    dtv_vorjahr = None
-    if(hat_vorjahresmonat):
-        dtv_vorjahr = dtv_p_vorjahr + dtv_g_vorjahr
+if st.button("Submit"):
+    #validate all fields
+    validations = [
+        validate_strecke_bezeichnung(strecke_bezeichnung),
+        validate_abschnitt(abschnitt)
+    ]
+    if all(v[0] for v in validations):
 
-    new_row = {"strecke_bezeichnung": strecke_bezeichnung,
-               "abschnitt": abschnitt,
-               "bezugsmonat": bezugsmonat,
-               "vorjahresmonat": vorjahresmonat,
-               "dtv_bezugsmonat": dtv_p + dtv_g,
-               "dtv_p_bezugsmonat": dtv_p,
-               "dtv_g_bezugsmonat": dtv_g,
-               "dtv_vorjahresmonat": dtv_vorjahr,
-               "dtv_p_vorjahresmonat": dtv_p_vorjahr,
-               "dtv_g_vorjahresmonat": dtv_g_vorjahr,
-               "hat_vorjahresmonat": hat_vorjahresmonat}
-    trains_df = pd.concat([trains_df, pd.DataFrame([new_row])], ignore_index = True)
-    success_dialog()
+        bezugsmonat = pd.to_datetime("{}-{}-01".format(jahr, monat)).to_period("M")
+        vorjahresmonat = bezugsmonat - 12
+
+        if(hat_vorjahresmonat):
+            dtv_vorjahr = dtv_p_vorjahr + dtv_g_vorjahr
+        else:
+            dtv_p_vorjahr = pd.NA
+            dtv_g_vorjahr = pd.NA
+            dtv_vorjahr = pd.NA
+
+        new_row = {"strecke_bezeichnung": strecke_bezeichnung,
+                "abschnitt": abschnitt,
+                "bezugsmonat": bezugsmonat,
+                "vorjahresmonat": vorjahresmonat,
+                "dtv_bezugsmonat": dtv_p + dtv_g,
+                "dtv_p_bezugsmonat": dtv_p,
+                "dtv_g_bezugsmonat": dtv_g,
+                "dtv_vorjahresmonat": dtv_vorjahr,
+                "dtv_p_vorjahresmonat": dtv_p_vorjahr,
+                "dtv_g_vorjahresmonat": dtv_g_vorjahr,
+                "hat_vorjahresmonat": hat_vorjahresmonat}
+        trains_df = pd.concat([trains_df, pd.DataFrame([new_row])], ignore_index = True)
+
+        success_dialog()
+    else:
+        #show all error messages
+        for valid, message in validations:
+            if not valid:
+                st.error(message)
