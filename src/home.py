@@ -92,7 +92,10 @@ top_10_lines = top_10_lines.rename(columns={"strecke_bezeichnung": "Top_10_Strec
 st.bar_chart(data=top_10_lines, x = "Top_10_Strecken", y= ["personenzuege_2025", "gueterzuege_2025"], stack=True)
 
 
-#-------------------------------------------------
+#-----------------------------------
+# input new data into the dataframe
+#-----------------------------------
+
 
 def validate_strecke_bezeichnung(strecke_bezeichnung):
     if(len(strecke_bezeichnung)<2):
@@ -116,21 +119,44 @@ def success_dialog():
         st.rerun()
 
 st.subheader("Input Additional Data")
-strecke_bezeichnung = st.text_input('Strecke Bezeichnung')
-if strecke_bezeichnung: 
-    is_valid, message = validate_strecke_bezeichnung(strecke_bezeichnung=strecke_bezeichnung)
-    if not is_valid:
-        st.error(message)
 
-abschnitt = st.text_input('Abschnitt')
-monat = st.selectbox("Monat", {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"})
-jahr = st.number_input("Jahr", min_value = 1980, max_value = int(date.today().strftime("%Y")))
-dtv_p = st.number_input('Anzahl Personenverkehrszüge', min_value = 0)
-dtv_g = st.number_input('Anzahl Güterverkehrszüge', min_value = 0)
+#first row in the form: specify the line
+col11, col12 = st.columns(2)
+with col11:
+    strecke_bezeichnung = st.text_input('Strecke Bezeichnung')
+    if strecke_bezeichnung: 
+        is_valid, message = validate_strecke_bezeichnung(strecke_bezeichnung=strecke_bezeichnung)
+        if not is_valid:
+            st.error(message)
 
+with col12:
+    abschnitt = st.text_input('Abschnitt')
+    if abschnitt:
+        is_valid, message = validate_abschnitt(abschnitt=abschnitt)
+        if not is_valid:
+            st.error(message)
+
+col21, col22 = st.columns(2)
+#second row in the form: month and year
+with col21:
+    jahr = st.number_input("Jahr", min_value = 1980, max_value = int(date.today().strftime("%Y")))
+with col22:
+    monat = st.selectbox("Monat", list(range(1, 13)))
+
+col31, col32 = st.columns(2)
+#third row in the form: number of trains
+with col31:
+    dtv_p = st.number_input('Anzahl Personenverkehrszüge', min_value = 0)
+with col32:
+    dtv_g = st.number_input('Anzahl Güterverkehrszüge', min_value = 0)
+
+#fourth row in the form: number of trains in the year before
 hat_vorjahresmonat = st.checkbox("Vorjahresdaten vorhanden")
-dtv_p_vorjahr = st.number_input('Anzahl Personenerkehrszüge im Vorjahresmonat', min_value = 0, disabled = not hat_vorjahresmonat)
-dtv_g_vorjahr = st.number_input('Anzahl Güterverkehrszüge im Vorjahresmonat', min_value = 0, disabled = not hat_vorjahresmonat)
+col41, col42 = st.columns(2)
+with col41:
+    dtv_p_vorjahr = st.number_input('Anzahl Personenerkehrszüge im Vorjahresmonat', min_value = 0, disabled = not hat_vorjahresmonat)
+with col42:
+    dtv_g_vorjahr = st.number_input('Anzahl Güterverkehrszüge im Vorjahresmonat', min_value = 0, disabled = not hat_vorjahresmonat)
 
 
 if st.button("Submit"):
