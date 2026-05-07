@@ -3,6 +3,7 @@ import streamlit as st
 import pandas as pd
 from data_cleaning import load_data, clean_data
 import matplotlib.pyplot as plt
+from preprocessing import extract_stations_df
 
 # Pre-processing
 # Store cleaned dataframe in session_state so user changes such as 
@@ -11,8 +12,15 @@ trains_raw_df = load_data()
 
 if "trains_df" not in st.session_state:
     st.session_state.trains_df = clean_data(trains_raw_df)
-
 trains_df = st.session_state.trains_df
+
+
+if "stations_df" not in st.session_state:
+    st.session_state.stations_df = extract_stations_df(trains_df = trains_df)  
+stations_df = st.session_state.stations_df
+
+st.dataframe(stations_df)
+
 
 st.title("SBB Trains per Route")
 st.write("Here you can explore a real-life dataset from SBB.")
@@ -123,14 +131,14 @@ st.subheader("Input Additional Data")
 #first row in the form: specify the line
 col11, col12 = st.columns(2)
 with col11:
-    strecke_bezeichnung = st.text_input('Strecke Bezeichnung')
+    strecke_bezeichnung = st.text_input('Strecke Bezeichnung', placeholder = "Solothurn - Olten")
     if strecke_bezeichnung: 
         is_valid, message = validate_strecke_bezeichnung(strecke_bezeichnung=strecke_bezeichnung)
         if not is_valid:
             st.error(message)
 
 with col12:
-    abschnitt = st.text_input('Abschnitt')
+    abschnitt = st.text_input('Abschnitt', placeholder = "Niederbipp - Oensingen")
     if abschnitt:
         is_valid, message = validate_abschnitt(abschnitt=abschnitt)
         if not is_valid:
