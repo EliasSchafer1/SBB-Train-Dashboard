@@ -1,9 +1,8 @@
-
 import streamlit as st
 from streamlit_folium import st_folium
 from map_maker import draw_map
 import plotly.express as px
-from home import trains_df
+from main import trains_df
 from layout import sbb_header
 
 # display sbb header

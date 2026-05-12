@@ -1,13 +1,17 @@
 import streamlit as st
 import pandas as pd
 import json
-from home import stations_df
+from main import trains_df, stations_df
 from layout import sbb_header
 
 #display sbb header
 sbb_header("Modify the Dataframe")
 
+#-------------------------
+#   helper methods
+#-------------------------
 
+#return true if it is a valid name for a line
 def validate_strecke_bezeichnung(strecke_bezeichnung):
     if(len(strecke_bezeichnung)<2):
         return False, "Streckenbezeichnung muss mindestens 2 Buchstaben haben."
@@ -21,6 +25,7 @@ def validate_abschnitt(station_from, station_to):
         return False, "Anfangs- und Endstation müssen verschieden sein."
     return True, ""
 
+#display a success dialog when the new data was entered into the df
 @st.dialog("New Train Line Added")
 def success_dialog():
     st.write("Success! The new row was added to the dataframe.")
@@ -30,7 +35,14 @@ def success_dialog():
     if st.button('OK'):
         st.rerun()
 
-st.subheader("Input Additional Data")
+
+
+#---------------------------------------
+# display the fields to enter the data
+#---------------------------------------
+
+#header
+st.subheader("Here you can input additional data into the dataframe.")
 
 #specify the name of the line
 strecke_bezeichnung = st.text_input('Strecke Bezeichnung', placeholder = "Solothurn - Olten")
@@ -72,6 +84,10 @@ with col41:
 with col42:
     dtv_g_vorjahr = st.number_input('Anzahl Güterverkehrszüge im Vorjahresmonat', min_value = 0, disabled = not hat_vorjahresmonat)
 
+
+#-------------------------------------------------------------------
+# submit process + add to dataframe (should be split up probably)
+#--------------------------------------------------------------------
 
 if st.button("Submit"):
     #validate all fields

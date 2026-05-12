@@ -2,34 +2,17 @@ from datetime import date
 import streamlit as st
 import pandas as pd
 import json
-from data_cleaning import load_data, clean_data
 import matplotlib.pyplot as plt
-from preprocessing import extract_stations_df
 from streamlit_folium import st_folium
 from map_maker import draw_map
 import plotly.express as px
 from layout import sbb_header
+from main import trains_df
 
 #display sbb header
 sbb_header("Home SBB Trains per Month")
 
-# Pre-processing
-# Store cleaned dataframe in session_state so user changes such as 
-# added rows or imputed values are kept during the current session.
-trains_raw_df = load_data()
-
-if "trains_df" not in st.session_state:
-    st.session_state.trains_df = clean_data(trains_raw_df)
-trains_df = st.session_state.trains_df
-
-if "stations_df" not in st.session_state:
-    st.session_state.stations_df = extract_stations_df(trains_df = st.session_state.trains_df)  
-stations_df = st.session_state.stations_df
-
-
 # web page
-
-
 st.write("Here you can explore a real-life dataset from SBB.")
 
 st.subheader("Preview")
