@@ -72,13 +72,13 @@ with c1:
     #Barplot of Trains of top_10_lines
     st.subheader("Top 10 lines")
     st.write("This chart shows the distribution of passenger and freight trains on the ten busiest routes in 2025.")
-    top_10_lines = trains_df.groupby("strecke_bezeichnung").agg(
+    top_10_lines = trains_df.groupby("abschnitt").agg(
         zuege_total_2025 = ("dtv_bezugsmonat", "sum"),
         personenzuege_2025 = ("dtv_p_bezugsmonat", "sum"),
         gueterzuege_2025 = ("dtv_g_bezugsmonat", "sum")
     ).reset_index()
     top_10_lines = top_10_lines.sort_values("zuege_total_2025", ascending=False).head(10)
-    top_10_lines = top_10_lines.rename(columns={"strecke_bezeichnung": "Top_10_Strecken"})
+    top_10_lines = top_10_lines.rename(columns={"abschnitt": "Top_10_Strecken"})
     fig = px.bar(top_10_lines, x = "Top_10_Strecken", y= ["personenzuege_2025", "gueterzuege_2025"],  barmode="stack", color_discrete_map={
         "personenzuege_2025": "#F67469", "gueterzuege_2025": "#D50000"
     })
@@ -89,9 +89,9 @@ with c2:
     #Histogramm distribution of average number trains per line
     st.subheader("Average Number of Trains per Route")
     st.write("This chart shows the average number of trains per route in 2025.")
-    avg_number_trains_per_line = trains_df.groupby("strecke_bezeichnung")["dtv_bezugsmonat"].mean().reset_index()
-    avg_number_trains_per_line = avg_number_trains_per_line.rename(columns = {"strecke_bezeichnung": "Strecken", "dtv_bezugsmonat": "zuege_total_2025"})
-    fig = px.bar(avg_number_trains_per_line, x = "Strecken", y = "zuege_total_2025", color_discrete_sequence=["#D50000"])
+    avg_number_trains_per_line = trains_df.groupby("abschnitt")["dtv_bezugsmonat"].mean().reset_index()
+    avg_number_trains_per_line = avg_number_trains_per_line.rename(columns = {"abschnitt": "Abschnitte", "dtv_bezugsmonat": "zuege_total_2025"})
+    fig = px.bar(avg_number_trains_per_line, x = "Abschnitte", y = "zuege_total_2025", color_discrete_sequence=["#D50000"])
     st.plotly_chart(fig, width="stretch")
 
 

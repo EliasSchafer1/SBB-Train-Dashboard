@@ -14,6 +14,9 @@ def clean_data(df):
     df = df.drop(columns=["geo_point_2d"])
     # Drop column "reihung", since it has no importance for our project
     df = df.drop(columns=["reihung"])
+    # Drop column "strecke_bezeichnung", because it also represents regional clusters (e.g. "Bern")
+    # rather than only point-to-point connections, which could mislead users
+    df = df.drop(columns=["strecke_bezeichnung"])
     
     # Convert to pandas datatypes
     df = df.convert_dtypes()
@@ -47,7 +50,6 @@ def clean_data(df):
     # Reorder the columns to get a meaningful order
     cols = [
         # Identification
-        "strecke_bezeichnung",
         "abschnitt",
         "abschnitt_von",
         "abschnitt_bis",

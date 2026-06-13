@@ -14,14 +14,6 @@ sbb_header("Modify the Dataframe")
 #   helper methods
 #-------------------------
 
-#return true if it is a valid name for a line
-def validate_strecke_bezeichnung(strecke_bezeichnung):
-    if(len(strecke_bezeichnung)<2):
-        return False, "Streckenbezeichnung muss mindestens 2 Buchstaben haben."
-    if('.' in strecke_bezeichnung):
-        return False, "Streckenbezeichnung darf keine Sonderzeichen enthalten." 
-    return True, ""
-
 #return true if it is a valid abschnitt
 def validate_abschnitt(station_from, station_to):
     if station_from == station_to:
@@ -46,13 +38,6 @@ def success_dialog():
 
 #header
 st.subheader("Here you can input additional data into the dataframe.")
-
-#specify the name of the line
-strecke_bezeichnung = st.text_input('Strecke Bezeichnung', placeholder = "Solothurn - Olten")
-if strecke_bezeichnung: 
-    is_valid, message = validate_strecke_bezeichnung(strecke_bezeichnung=strecke_bezeichnung)
-    if not is_valid:
-        st.error(message)
 
 #first row in the form: specify the line start and endpoints
 col11, col12 = st.columns(2)
@@ -95,7 +80,6 @@ with col42:
 if st.button("Submit"):
     #validate all fields
     validations = [
-        validate_strecke_bezeichnung(strecke_bezeichnung),
         validate_abschnitt(station_from, station_to),
     ]
     if all(v[0] for v in validations):
@@ -113,8 +97,7 @@ if st.button("Submit"):
         station_to_coordinates = [float(station_to_row.iloc[0]["longitude"]), float(station_to_row.iloc[0]["latitude"])]
         station_from_coordinates = [float(station_from_row.iloc[0]["longitude"]), float(station_from_row.iloc[0]["latitude"])]
 
-        new_row = {"strecke_bezeichnung": strecke_bezeichnung,
-                "abschnitt": "{} – {}".format(station_from, station_to),
+        new_row = {"abschnitt": "{} – {}".format(station_from, station_to),
                 "abschnitt_von": station_from_row.iloc[0]["label"],
                 "abschnitt_bis": station_to_row.iloc[0]["label"],
                 "bezugsmonat": bezugsmonat,
