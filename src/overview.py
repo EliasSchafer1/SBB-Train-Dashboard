@@ -30,7 +30,9 @@ st.dataframe(trains_df)
 c1, c2 = st.columns(2, gap = "large")
 with c1:
     st.subheader("Missing Values")
-    st.write(trains_df.isna().sum())
+    missing = trains_df.isna().sum().reset_index()
+    missing.columns = ["Column", "Missing Values"]
+    st.dataframe(missing)
 with c2:
     st.subheader("Impute Missing Values")
 

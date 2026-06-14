@@ -192,6 +192,6 @@ fig_bar = px.bar(
 #make plot
 st.plotly_chart(
     fig_bar,
-    use_container_width=True,
+    width='stretch',
     key="traffic_barplot",
 )

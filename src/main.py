@@ -9,9 +9,9 @@ with open("style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 #define pages
-home = st.Page("overview.py", title="Overview", icon="🚂")
-explore = st.Page("explore.py", title="Explore", icon="🚝" )
-modify = st.Page("modify.py", title="Modify", icon="🚝" )
+home = st.Page("overview.py", title="Overview", icon="🚝")
+explore = st.Page("explore.py", title="Explore", icon="🔍" )
+modify = st.Page("modify.py", title="Modify", icon="🛠️" )
 
 trains_df = get_trains_df()
 stations_df = get_stations_df()
