@@ -58,6 +58,7 @@ filtered = trains_df[trains_df["section"].isin(selected_sections)].copy()
 plot_args = {
     "x": "reference_month",
     "y": "total_trains",
+    "labels" : {"reference_month":"Reference Month", "total_trains": "Average Daily Trains", "section" : "Route Section"},
     "markers": True
 }
 if metric == metrics[0]:
@@ -180,6 +181,7 @@ fig_bar = px.bar(
     compare_years_long,
     x="reference_month",
     y="total_trains",
+    labels={"reference_month":"Reference Month", "total_trains": "Average Daily Trains", "year" : "Year"},
     color="year",
     barmode="group",
     color_discrete_map={

@@ -22,10 +22,11 @@ c2.metric("Columns", trains_df.shape[1])
 c3.metric("Missing values", trains_df.isna().sum().sum())
 st.space("large")
 
-# dataframe preview
+# Dataframe preview
 st.subheader("Preview")
 st.dataframe(trains_df)
 
+# Handling missing values
 c1, c2 = st.columns(2, gap = "large")
 with c1:
     st.subheader("Missing Values")
@@ -74,7 +75,7 @@ for i, col in enumerate([c1, c2]):
         ).reset_index()
         fig = px.bar(avg_per_month, x="reference_month", y=["passenger_trains", "freight_trains"],
                      barmode="stack",
-                     labels={"value": "Average Daily Trains", "variable": "Train Type"},
+                     labels={"reference_month":"Reference Month","value": "Average Daily Trains", "variable": "Train Type"},
                      color_discrete_map={"passenger_trains": "#F67469", "freight_trains": "#D50000"})
         st.plotly_chart(fig, width="stretch")
 
