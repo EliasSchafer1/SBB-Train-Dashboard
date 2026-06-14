@@ -71,12 +71,12 @@ def clean_data(df):
         "abschnitt_von": "section_from",
         "abschnitt_bis": "section_to",
         "bezugsmonat": "reference_month",
-        "dtv_bezugsmonat": "dtv_reference_month",
-        "dtv_vorjahresmonat": "dtv_previous_year_month",
-        "dtv_p_bezugsmonat": "dtv_p_reference_month",
-        "dtv_p_vorjahresmonat": "dtv_p_previous_year_month",
-        "dtv_g_bezugsmonat": "dtv_g_reference_month",
-        "dtv_g_vorjahresmonat": "dtv_g_previous_year_month",
+        "dtv_bezugsmonat": "daily_trains",
+        "dtv_vorjahresmonat": "daily_trains_py",
+        "dtv_p_bezugsmonat": "daily_passenger_trains",
+        "dtv_p_vorjahresmonat": "daily_passenger_trains_py",
+        "dtv_g_bezugsmonat": "daily_freight_trains",
+        "dtv_g_vorjahresmonat": "daily_freight_trains_py",
         "verbindung": "connection",
     })
 

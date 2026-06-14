@@ -66,17 +66,17 @@ reference_month = month_names[month_num - 1]
 col31, col32 = st.columns(2)
 #third row in the form: number of trains
 with col31:
-    dtv_p = st.number_input('Number of Passenger Trains', min_value = 0)
+    daily_passenger_trains = st.number_input('Number of Passenger Trains', min_value = 0)
 with col32:
-    dtv_g = st.number_input('Number of Freight Trains', min_value = 0)
+    daily_freight_trains = st.number_input('Number of Freight Trains', min_value = 0)
 
 #fourth row in the form: number of trains in the year before
 has_previous_year_month = st.checkbox("Previous Year Data Available")
 col41, col42 = st.columns(2)
 with col41:
-    dtv_p_previous_year = st.number_input('Number of Passenger Trains in Previous Year Month', min_value = 0, disabled = not has_previous_year_month)
+    daily_passenger_trains_py = st.number_input('Number of Passenger Trains in Previous Year Month', min_value = 0, disabled = not has_previous_year_month)
 with col42:
-    dtv_g_previous_year = st.number_input('Number of Freight Trains in Previous Year Month', min_value = 0, disabled = not has_previous_year_month)
+    daily_freight_trains_py = st.number_input('Number of Freight Trains in Previous Year Month', min_value = 0, disabled = not has_previous_year_month)
 
 
 #-------------------------------------------------------------------
@@ -91,11 +91,11 @@ if st.button("Submit"):
     if all(v[0] for v in validations):
 
         if(has_previous_year_month):
-            dtv_previous_year = dtv_p_previous_year + dtv_g_previous_year
+            daily_trains_py = daily_passenger_trains_py + daily_freight_trains_py
         else:
-            dtv_p_previous_year = pd.NA
-            dtv_g_previous_year = pd.NA
-            dtv_previous_year = pd.NA
+            daily_passenger_trains_py = pd.NA
+            daily_freight_trains_py = pd.NA
+            daily_trains_py = pd.NA
 
         #arrays with the coordinates
         station_to_coordinates = [float(station_to_row.iloc[0]["longitude"]), float(station_to_row.iloc[0]["latitude"])]
@@ -106,12 +106,12 @@ if st.button("Submit"):
                 "section_to": station_to_row.iloc[0]["label"],
                 "reference_month": reference_month,
                 "month_num": month_num,
-                "dtv_reference_month": dtv_p + dtv_g,
-                "dtv_p_reference_month": dtv_p,
-                "dtv_g_reference_month": dtv_g,
-                "dtv_previous_year_month": dtv_previous_year,
-                "dtv_p_previous_year_month": dtv_p_previous_year,
-                "dtv_g_previous_year_month": dtv_g_previous_year,
+            "daily_trains": daily_passenger_trains + daily_freight_trains,
+            "daily_passenger_trains": daily_passenger_trains,
+            "daily_freight_trains": daily_freight_trains,
+            "daily_trains_py": daily_trains_py,
+            "daily_passenger_trains_py": daily_passenger_trains_py,
+            "daily_freight_trains_py": daily_freight_trains_py,
                 "has_previous_year_month": has_previous_year_month,
                 "connection": json.dumps({
                     "coordinates": [station_from_coordinates, station_to_coordinates], 

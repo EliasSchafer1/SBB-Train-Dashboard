@@ -36,10 +36,10 @@ with c2:
 st.space("large")
 
 
-years = [2024, 2025]
-ref_cols = ["dtv_reference_month", "dtv_previous_year_month"]
-p_cols = ["dtv_p_reference_month", "dtv_p_previous_year_month"]
-g_cols = ["dtv_g_reference_month", "dtv_g_previous_year_month"]
+years = [2025, 2024]
+daily_trains_cols = ["daily_trains", "daily_trains_py"]
+daily_passenger_trains_cols = ["daily_passenger_trains", "daily_passenger_trains_py"]
+daily_freight_trains_cols = ["daily_freight_trains", "daily_freight_trains_py"]
 
 # Barplots per month
 st.subheader("Passenger and Freight Trains by Month")
@@ -49,8 +49,8 @@ for i, col in enumerate([c1, c2]):
     with col:
         st.markdown(f"**{years[i]}**")
         avg_per_month = trains_df.groupby("reference_month").agg(
-            passenger_trains=(p_cols[i], "mean"),
-            freight_trains=(g_cols[i], "mean")
+            passenger_trains=(daily_passenger_trains_cols[i], "mean"),
+            freight_trains=(daily_freight_trains_cols[i], "mean")
         ).reset_index()
         fig = px.bar(avg_per_month, x="reference_month", y=["passenger_trains", "freight_trains"],
                      barmode="stack",
@@ -66,9 +66,9 @@ for i, col in enumerate([c3, c4]):
     with col:
         st.markdown(f"**{years[i]}**")
         top_10 = trains_df.groupby("section").agg(
-            avg_trains=(ref_cols[i], "mean"),
-            passenger_trains=(p_cols[i], "mean"),
-            freight_trains=(g_cols[i], "mean")
+            avg_trains=(daily_trains_cols[i], "mean"),
+            passenger_trains=(daily_passenger_trains_cols[i], "mean"),
+            freight_trains=(daily_freight_trains_cols[i], "mean")
         ).reset_index()
         top_10 = top_10.sort_values("avg_trains", ascending=False).head(10)
         fig = px.bar(top_10, x="section", y=["passenger_trains", "freight_trains"],
@@ -84,14 +84,14 @@ c5, c6 = st.columns(2, gap="large")
 for i, col in enumerate([c5, c6]):
     with col:
         st.markdown(f"**{years[i]}**")
-        avg_per_section = trains_df.groupby("section")[ref_cols[i]].mean().reset_index()
-        fig = px.histogram(avg_per_section, x=ref_cols[i],
+        avg_per_section = trains_df.groupby("section")[daily_trains_cols[i]].mean().reset_index()
+        fig = px.histogram(avg_per_section, x=daily_trains_cols[i],
                            nbins=60,
                            color_discrete_sequence=["#D50000"],
-                           labels={ref_cols[i]: "Average Daily Trains"})
+                   labels={daily_trains_cols[i]: "Average Daily Trains"})
         fig.update_yaxes(title_text="Number of Route Sections")
         fig.update_traces(xbins=dict(start=0, size=30)) # Fixed size bins anchored at zero
-        fig.update_xaxes(range=[0, avg_per_section[ref_cols[i]].max() * 1.05], dtick=100)
+        fig.update_xaxes(range=[0, avg_per_section[daily_trains_cols[i]].max() * 1.05], dtick=100)
         st.plotly_chart(fig, width="stretch")
         
 
@@ -101,9 +101,9 @@ st.subheader("Handle Missing Values")
 # fill missing previous-year train counts with column mean
 if st.button("Fill missing previous-year values (mean)"):
     cols = [
-        "dtv_previous_year_month",
-        "dtv_p_previous_year_month",
-        "dtv_g_previous_year_month",
+        "daily_trains_py",
+        "daily_passenger_trains_py",
+        "daily_freight_trains_py",
     ]
 
     for col in cols:

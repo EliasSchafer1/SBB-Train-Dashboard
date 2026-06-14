@@ -15,7 +15,7 @@ st.subheader("Monthly train traffic")
 st.write("This line chart shows the monthly train traffic per selected route section for the selected year.")
 
 # Sum or average of selected sections, all sections at the same time
-# Choose between dtv, dtv_p or dtv_g
+# Choose between daily train categories
 col11, col12, col13, col14 = st.columns(4)
 # User specifies the year
 with col12:
@@ -31,15 +31,18 @@ with col13:
         metrics
     )
 train_types = ["All types", "Passenger trains", "Freight trains"]
-types_to_prefix = {"All types":"dtv_", "Passenger trains":"dtv_p_", "Freight trains":"dtv_g_"}
+train_type_to_columns = {
+    "All types": ("daily_trains", "daily_trains_py"),
+    "Passenger trains": ("daily_passenger_trains", "daily_passenger_trains_py"),
+    "Freight trains": ("daily_freight_trains", "daily_freight_trains_py"),
+}
 with col14:
     train_type = st.radio(
         "Train type",
         train_types,
         key="type_select_traffic"
     )
-data_sel = "reference_month" if selected_year == 2025 else "previous_year_month"
-data_sel = types_to_prefix[train_type]+data_sel
+data_sel = train_type_to_columns[train_type][0 if selected_year == 2025 else 1]
 # User specifies the sections
 with col11:
     valid_sections = (
@@ -78,7 +81,7 @@ st.plotly_chart(fig, width="stretch")
 # Create map of all route sections
 st.subheader("Map of Route Sections")
 st.write("This map contains the mean monthly traffic from the selected year")
-# Choose between dtv, dtv_p or dtv_g
+# Choose between daily train categories
 col11, col12 = st.columns(2)
 # User specifies the year
 with col11:
@@ -88,15 +91,13 @@ with col11:
         key="year_select_map"
     )
 train_types = ["All types", "Passenger trains", "Freight trains"]
-types_to_prefix = {"All types":"dtv_", "Passenger trains":"dtv_p_", "Freight trains":"dtv_g_"}
 with col12:
     train_type = st.radio(
         "Train type",
         train_types,
         key="type_select_map"
     )
-data_sel = "reference_month" if selected_year == 2025 else "previous_year_month"
-data_sel = types_to_prefix[train_type]+data_sel
+data_sel = train_type_to_columns[train_type][0 if selected_year == 2025 else 1]
 map_trains = draw_map(trains_df, data_sel=data_sel)
 st_folium(map_trains, width=700)
 
@@ -109,7 +110,6 @@ col11, col12 = st.columns(2)
 
 # User specifies the train type
 train_types = ["All types", "Passenger trains", "Freight trains"]
-types_to_prefix = {"All types":"dtv_", "Passenger trains":"dtv_p_", "Freight trains":"dtv_g_"}
 with col12:
     train_type = st.radio(
         "Train type",
@@ -117,8 +117,7 @@ with col12:
         key="type2_select_traffic"
     )
 
-data_sel = "reference_month" if selected_year == 2025 else "previous_year_month"
-data_sel = types_to_prefix[train_type]+data_sel
+data_sel = train_type_to_columns[train_type][0 if selected_year == 2025 else 1]
 
 # User specifies the sections
 with col11:
@@ -153,14 +152,12 @@ else:
         .groupby("reference_month")
         .agg(total_trains = (data_sel, metric.lower()))
     ).reset_index()
-
-
-prefix = types_to_prefix[train_type]
+current_year_col, previous_year_col = train_type_to_columns[train_type]
 
 #group by months
 compare_years = filtered.groupby("reference_month").agg(
-    value_2025=(prefix + "reference_month", "sum"),
-    value_2024=(prefix + "previous_year_month", "sum"),
+    value_2025=(current_year_col, "sum"),
+    value_2024=(previous_year_col, "sum"),
 ).reset_index()
 
 # Transform dataframe from wide format to long format
