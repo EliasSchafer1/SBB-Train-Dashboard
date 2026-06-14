@@ -116,6 +116,7 @@ if st.button("Submit"):
         
         trains_df = pd.concat([trains_df, pd.DataFrame([new_row])], ignore_index = True)
         trains_df = trains_df.convert_dtypes()
+        trains_df["reference_month"] = pd.Categorical(trains_df["reference_month"], categories=month_names, ordered=True)
         st.session_state.trains_df = trains_df
         success_dialog()
     else:
