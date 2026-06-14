@@ -35,7 +35,8 @@ with c1:
     st.dataframe(missing)
 with c2:
     st.subheader("Impute Missing Values")
-
+    st.write("Missing values in previous-year columns indicate route sections without 2024 data for that month, "\
+        "due to construction, service interruptions, or changes in the route network.")
     # fill missing previous-year values
     if "filled" not in st.session_state:
         st.session_state.filled = False
