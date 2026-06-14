@@ -15,8 +15,7 @@ trains_df = get_trains_df()
 sbb_header("Home SBB Trains per Month")
 st.write("Welcome on the Dashboard of the Project SBB Trains Per Month! " \
 "Here you can explore a real-life dataset from SBB " \
-"containing the number of passenger and freight trains for each route section in Switzerland. " \
-"The data is up to date with full information about 2025 and partial information about 2024. " \
+"containing the number of passenger and freight trains for each SBB route section in Switzerland. " \
 "Have fun!")
 st.space("large")
 
@@ -37,62 +36,64 @@ with c2:
 st.space("large")
 
 
-c1, c2 = st.columns(2, gap = "large")
-#Barplot of Trains per month 2025
-with c1: 
-    st.subheader("Passenger and Freight Trains in 2025")
-    st.write("This chart compares the monthly number of passenger and freight trains in 2025.")
-    total_trains_per_month = trains_df.groupby("reference_month").agg(
-        total_trains_2025 = ("dtv_reference_month", "sum"),
-        passenger_trains_2025 = ("dtv_p_reference_month", "sum"),
-        freight_trains_2025 =("dtv_g_reference_month", "sum")
-    ).reset_index()
-    total_trains_per_month = total_trains_per_month.sort_values("reference_month")
-    fig = px.bar(total_trains_per_month, x = "reference_month", y = ["passenger_trains_2025", "freight_trains_2025"], barmode="stack", color_discrete_map={
-        "passenger_trains_2025": "#F67469", "freight_trains_2025": "#D50000"
-    })
-    st.plotly_chart(fig, width="stretch")
+years = [2024, 2025]
+ref_cols = ["dtv_reference_month", "dtv_previous_year_month"]
+p_cols = ["dtv_p_reference_month", "dtv_p_previous_year_month"]
+g_cols = ["dtv_g_reference_month", "dtv_g_previous_year_month"]
 
-#Barplot of Trains per month 2024
-with c2: 
-    st.subheader("Passenger and Freight Trains in 2024")
-    st.write("This chart compares the monthly number of passenger and freight trains in 2024.")
-    total_trains_per_month = trains_df.groupby("reference_month").agg(
-        total_trains_2024 = ("dtv_previous_year_month", "sum"),
-        passenger_trains_2024 = ("dtv_p_previous_year_month", "sum"),
-        freight_trains_2024 =("dtv_g_previous_year_month", "sum")
-    ).reset_index()
-    total_trains_per_month = total_trains_per_month.sort_values("reference_month")
-    fig = px.bar(total_trains_per_month, x = "reference_month", y = ["passenger_trains_2024", "freight_trains_2024"], barmode="stack", color_discrete_map={
-        "passenger_trains_2024": "#F67469", "freight_trains_2024": "#D50000"
-    })
-    st.plotly_chart(fig, width="stretch")
+# Barplots per month
+st.subheader("Passenger and Freight Trains by Month")
+st.write("This chart shows the monthly average of daily trains across all route sections, split by passenger and freight.")
+c1, c2 = st.columns(2, gap="large")
+for i, col in enumerate([c1, c2]):
+    with col:
+        st.markdown(f"**{years[i]}**")
+        avg_per_month = trains_df.groupby("reference_month").agg(
+            passenger_trains=(p_cols[i], "mean"),
+            freight_trains=(g_cols[i], "mean")
+        ).reset_index()
+        fig = px.bar(avg_per_month, x="reference_month", y=["passenger_trains", "freight_trains"],
+                     barmode="stack",
+                     labels={"value": "Average Daily Trains", "variable": "Train Type"},
+                     color_discrete_map={"passenger_trains": "#F67469", "freight_trains": "#D50000"})
+        st.plotly_chart(fig, width="stretch")
 
-with c1:
-    #Barplot of Trains of top_10_sections
-    st.subheader("Top 10 Route Sections")
-    st.write("This chart shows the distribution of passenger and freight trains on the ten busiest route sections in 2025.")
-    top_10_sections = trains_df.groupby("section").agg(
-        total_trains_2025 = ("dtv_reference_month", "sum"),
-        passenger_trains_2025 = ("dtv_p_reference_month", "sum"),
-        freight_trains_2025 = ("dtv_g_reference_month", "sum")
-    ).reset_index()
-    top_10_sections = top_10_sections.sort_values("total_trains_2025", ascending=False).head(10)
-    top_10_sections = top_10_sections.rename(columns={"section": "Top_10_Sections"})
-    fig = px.bar(top_10_sections, x = "Top_10_Sections", y= ["passenger_trains_2025", "freight_trains_2025"],  barmode="stack", color_discrete_map={
-        "passenger_trains_2025": "#F67469", "freight_trains_2025": "#D50000"
-    })
-    st.plotly_chart(fig, width="stretch")
-    st.space("large")
+# Top 10 Route Sections
+st.subheader("Top 10 Route Sections by Average Daily Trains")
+st.write("This chart shows the average daily number of passenger and freight trains on the ten busiest route sections.")
+c3, c4 = st.columns(2, gap="large")
+for i, col in enumerate([c3, c4]):
+    with col:
+        st.markdown(f"**{years[i]}**")
+        top_10 = trains_df.groupby("section").agg(
+            avg_trains=(ref_cols[i], "mean"),
+            passenger_trains=(p_cols[i], "mean"),
+            freight_trains=(g_cols[i], "mean")
+        ).reset_index()
+        top_10 = top_10.sort_values("avg_trains", ascending=False).head(10)
+        fig = px.bar(top_10, x="section", y=["passenger_trains", "freight_trains"],
+                     barmode="stack",
+                     labels={"value": "Average Daily Trains", "variable": "Train Type"},
+                     color_discrete_map={"passenger_trains": "#F67469", "freight_trains": "#D50000"})
+        st.plotly_chart(fig, width="stretch")
 
-with c2:
-    #Histogramm distribution of average number trains per section
-    st.subheader("Average Number of Trains per Route Section")
-    st.write("This chart shows the average number of trains per route section in 2025.")
-    avg_number_trains_per_section = trains_df.groupby("section")["dtv_reference_month"].mean().reset_index()
-    avg_number_trains_per_section = avg_number_trains_per_section.rename(columns = {"section": "Sections", "dtv_reference_month": "total_trains_2025"})
-    fig = px.bar(avg_number_trains_per_section, x = "Sections", y = "total_trains_2025", color_discrete_sequence=["#D50000"])
-    st.plotly_chart(fig, width="stretch")
+# Distribution of Average Daily Trains
+st.subheader("Distribution of Average Daily Trains")
+st.write("This histogram shows the distribution of average daily trains across all route sections.")
+c5, c6 = st.columns(2, gap="large")
+for i, col in enumerate([c5, c6]):
+    with col:
+        st.markdown(f"**{years[i]}**")
+        avg_per_section = trains_df.groupby("section")[ref_cols[i]].mean().reset_index()
+        fig = px.histogram(avg_per_section, x=ref_cols[i],
+                           nbins=60,
+                           color_discrete_sequence=["#D50000"],
+                           labels={ref_cols[i]: "Average Daily Trains"})
+        fig.update_yaxes(title_text="Number of Route Sections")
+        fig.update_traces(xbins=dict(start=0, size=30)) # Fixed size bins anchored at zero
+        fig.update_xaxes(range=[0, avg_per_section[ref_cols[i]].max() * 1.05], dtick=100)
+        st.plotly_chart(fig, width="stretch")
+        
 
 
 st.subheader("Handle Missing Values")
