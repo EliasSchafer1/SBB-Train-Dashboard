@@ -21,10 +21,8 @@ def clean_data(df):
     # Convert to pandas datatypes
     df = df.convert_dtypes()
 
-    # Change column "Bemerkung" to a boolean column "Hat_Vorjahresangaben",
-    # because the only comment that exists is "Keine Angaben zum Vorjahr vorhanden. Mögliche Gründe: Baustellen, Unterbrüche oder Änderungen an der Streckentopologie."
-    # or else it has a NaN-value
-    df["hat_vorjahresmonat"] = df["bemerkung"].isna()
+    # Drop column "Bemerkung" because the only comment that exists is
+    # "Keine Angaben zum Vorjahr vorhanden. Mögliche Gründe: Baustellen, Unterbrüche oder Änderungen an der Streckentopologie."
     df = df.drop(columns=["bemerkung"])
 
     # Splitting months into two different columns and converting to datetime
@@ -63,8 +61,6 @@ def clean_data(df):
         "dtv_p_vorjahresmonat",
         "dtv_g_bezugsmonat",
         "dtv_g_vorjahresmonat",
-        # Additional information
-        "hat_vorjahresmonat",
         # Geo data
         "verbindung",
     ]]
@@ -81,7 +77,6 @@ def clean_data(df):
         "dtv_p_vorjahresmonat": "dtv_p_previous_year_month",
         "dtv_g_bezugsmonat": "dtv_g_reference_month",
         "dtv_g_vorjahresmonat": "dtv_g_previous_year_month",
-        "hat_vorjahresmonat": "has_previous_year_month",
         "verbindung": "connection",
     })
 
