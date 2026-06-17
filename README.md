@@ -33,12 +33,14 @@ poetry run streamlit run src/main.py
 
 ## Example usage
 
-1. Go to the Explore tab.
-2. Scroll to the graph “Comparison of Train Traffic in 2024 and 2025”.
-3. Select the route sections:
-   * Gotthard Nord (Spw) – Airolo
-   * Rynächt (Abzw) – Sedrun SMF
-4. Compare the traffic patterns of both route sections.
+1. Open the Explore tab.
+2. In the "Monthly train traffic" view:
+   - Select the route sections:
+     • Gotthard Nord (Spw) – Airolo
+     • Rynächt (Abzw) – Sedrun SMF
+   - Set Train type to "Passenger trains"
+   - Keep Year and Aggregation at their default settings
+3. Compare the monthly traffic patterns of the selected route sections.
 
 You will observe that the traffic patterns of these two sections are strongly complementary, with a clear shift around late summer 2024.
 
