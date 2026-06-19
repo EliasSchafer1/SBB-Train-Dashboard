@@ -45,7 +45,7 @@ with c2:
         st.info(f"Missing values have been imputed with the column {st.session_state.method.lower()}.")
     else:
         option = st.radio("Imputation method:", ["Mean", "Median"])
-        if st.button("Fill missing previous-year values (mean)"):
+        if st.button(f"Fill missing previous-year values ({option.lower()})"):
             cols = [
                 "daily_trains_py",
                 "daily_passenger_trains_py",
