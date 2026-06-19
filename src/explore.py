@@ -4,6 +4,7 @@ from map_maker import draw_map
 import plotly.express as px
 from data_store import get_trains_df
 from layout import sbb_header
+import pandas as pd
 
 trains_df = get_trains_df()
 
@@ -25,7 +26,7 @@ st.write("Monthly average daily train traffic per selected route section for the
 
 # Sum or average of selected sections, all sections at the same time
 # Choose between daily train categories
-col1, col2, col3, col4 = st.columns(4)
+col1, col2, col3, col4, col5 = st.columns(5)
 # User specifications
 with col1:
     selected_sections = st.multiselect(
@@ -51,6 +52,12 @@ with col4:
         train_types,
         key="type_select_traffic"
     )
+with col5:
+    smoothing = st.radio(
+        "Smoothing",
+        ["None", "3-month rolling mean"]
+    )
+
 data_sel = train_type_to_columns[train_type][0 if selected_year == 2025 else 1]
 filtered = trains_df[trains_df["section"].isin(selected_sections)].copy()
 plot_args = {
@@ -87,6 +94,23 @@ incomplete = (
 )
 if incomplete:
     st.info("Some route sections have incomplete data for certain months. These are excluded from aggregations.")
+
+# Use rolling mean if selected
+def add_rolling(df, window=3):
+    df = df.sort_values("reference_month").copy()
+    df["total_trains"] = df["total_trains"].rolling(window=window, min_periods=1).mean()
+    return df
+if smoothing == "3-month rolling mean":
+    if metric == "Show separately":
+        compare_months = pd.concat([
+            add_rolling(
+                compare_months[compare_months["section"] == section]
+            )
+            for section in compare_months["section"].unique()
+        ])
+    else:
+        compare_months = add_rolling(compare_months)
+        
 # Make plot
 fig = px.line(compare_months, **plot_args)
 fig.update_yaxes(rangemode="tozero")
