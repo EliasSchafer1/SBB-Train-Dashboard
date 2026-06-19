@@ -57,6 +57,7 @@ with col5:
         "Smoothing",
         ["None", "3-month rolling mean"]
     )
+zoom_mode_1 = st.checkbox("Zoom y-axis into data", key="zoom_traffic_1")
 
 data_sel = train_type_to_columns[train_type][0 if selected_year == 2025 else 1]
 filtered = trains_df[trains_df["section"].isin(selected_sections)].copy()
@@ -113,7 +114,10 @@ if smoothing == "3-month rolling mean":
         
 # Make plot
 fig = px.line(compare_months, **plot_args)
-fig.update_yaxes(rangemode="tozero")
+if zoom_mode_1:
+    fig.update_yaxes(autorange=True)
+else:
+    fig.update_yaxes(rangemode="tozero")
 st.plotly_chart(fig, width="stretch")
 
 ######################## Line chart of traffic comparison ############################
@@ -135,6 +139,7 @@ with col2:
         train_types,
         key="type2_select_traffic"
     )
+zoom_mode_2 = st.checkbox("Zoom y-axis into data", key="zoom_traffic_2")
 
 current_year_col, previous_year_col = train_type_to_columns[train_type]
 
@@ -169,7 +174,10 @@ fig = px.line(
     labels={"reference_month": "Month", "total_trains": "Average Daily Trains", "year": "Year"},
     color_discrete_map={"2024": "#F67469", "2025": "#D50000"}
 )
-fig.update_yaxes(rangemode="tozero")
+if zoom_mode_2:
+    fig.update_yaxes(autorange=True)
+else:
+    fig.update_yaxes(rangemode="tozero")
 st.plotly_chart(fig, width="stretch", key="traffic_lineplot")
 
 ######################## Map of route sections #########################
