@@ -101,7 +101,7 @@ def add_rolling(df, window=3):
     df = df.sort_values("reference_month").copy()
     df["total_trains"] = df["total_trains"].rolling(window=window, min_periods=1).mean()
     return df
-if smoothing == "3-month rolling mean":
+if smoothing == "3-month rolling mean" and not compare_months.empty:
     if metric == "Show separately":
         compare_months = pd.concat([
             add_rolling(
