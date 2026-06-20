@@ -18,7 +18,7 @@ pyenv local 3.11.8
 ### 2. Clone repository:
 ```
 git clone https://github.com/EliasSchafer1/SBB-Train-Dashboard.git
-cd sbb-trains-per-route
+cd SBB-Train-Dashboard
 ```
 
 ### 3. Install dependencies:
