@@ -1,4 +1,4 @@
-# sbb-trains-per-route
+# SBB Train Dashboard
 
 Interactive EDA dashboard for average daily train frequencies across SBB route sections by month (2024–2025)
 
@@ -9,16 +9,16 @@ Interactive EDA dashboard for average daily train frequencies across SBB route s
 
 ## Setup
 
-### 1. Set up the python version (e.g. via pyenv): 
-```
-pyenv install 3.11.8
-pyenv local 3.11.8
-```
-
-### 2. Clone repository:
+### 1. Clone repository:
 ```
 git clone https://github.com/EliasSchafer1/SBB-Train-Dashboard.git
 cd SBB-Train-Dashboard
+```
+
+### 2. Set up the python version (e.g. via pyenv): 
+```
+pyenv install 3.11.8
+pyenv local 3.11.8
 ```
 
 ### 3. Install dependencies:
